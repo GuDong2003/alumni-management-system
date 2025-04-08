@@ -14,10 +14,6 @@
           <el-icon><Monitor /></el-icon>
           <span>仪表盘</span>
         </el-menu-item>
-        <el-menu-item index="/alumni/Profile">
-          <el-icon><User /></el-icon>
-          <span>个人信息</span>
-        </el-menu-item>
         <el-menu-item index="/alumni/Activities">
           <el-icon><Calendar /></el-icon>
           <span>活动参与</span>

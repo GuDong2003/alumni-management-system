@@ -452,7 +452,7 @@ const activityStatusOptions = [
 // 参与状态选项
 const participantStatusOptions = [
   { label: '已报名', value: 'REGISTERED' },
-  { label: '已确认', value: 'CONFIRMED' },
+  { label: '已签到', value: 'CHECKED_IN' },
   { label: '已取消', value: 'CANCELLED' },
   { label: '已完成', value: 'COMPLETED' }
 ]
@@ -925,36 +925,51 @@ const handleSubmitNotification = async () => {
 const getParticipantStatusLabel = (status) => {
   const statusMap = {
     'REGISTERED': '已报名',
-    'CONFIRMED': '已确认',
+    'CHECKED_IN': '已签到',
     'CANCELLED': '已取消',
     'COMPLETED': '已完成'
   }
-  return statusMap[status] || status
+  return statusMap[status] || '未参与'
 }
 
 // 获取参与状态类型
 const getParticipantStatusType = (status) => {
   const typeMap = {
-    'REGISTERED': 'warning',    // 待处理 -> 已报名（黄色）
-    'CONFIRMED': 'primary',     // 处理中 -> 已确认（蓝色）
-    'COMPLETED': 'success',     // 已解决 -> 已完成（绿色）
-    'CANCELLED': 'info'         // 已关闭 -> 已取消（灰色）
+    'REGISTERED': 'primary',    // 已报名 - 蓝色
+    'CHECKED_IN': 'success',    // 已签到 - 绿色
+    'CANCELLED': 'danger',      // 已取消 - 红色
+    'COMPLETED': 'info'         // 已完成 - 灰色
   }
   return typeMap[status] || 'info'
 }
 
 const handleUpdateParticipantStatus = async (participant, status) => {
   try {
-    await request({
-      url: `/api/activities/${currentActivityId.value}/participants/${participant.id}/status/${status}`,
+    // 检查状态是否有效
+    const validStatuses = ['REGISTERED', 'CHECKED_IN', 'CANCELLED', 'COMPLETED'];
+    if (!validStatuses.includes(status)) {
+      ElMessage.error('无效的状态值');
+      return;
+    }
+
+    // 发送状态更新请求
+    const response = await request({
+      url: `/api/activities/${currentActivityId.value}/participants/${participant.userId}/status/${status}`,
       method: 'put'
-    })
-    ElMessage.success('状态更新成功')
-    // 重新获取参与者列表
-    await fetchParticipants()
+    });
+
+    if (response) {
+      ElMessage.success('状态更新成功');
+      // 更新本地状态
+      participant.status = status;
+      // 重新获取参与者列表以确保数据同步
+      await fetchParticipants();
+    } else {
+      ElMessage.error('状态更新失败');
+    }
   } catch (error) {
-    console.error('更新状态失败:', error)
-    ElMessage.error(error.message || '更新状态失败')
+    console.error('更新状态失败:', error);
+    ElMessage.error(error.message || '更新状态失败');
   }
 }
 

@@ -71,10 +71,6 @@ const routes = [
         component: AlumniDashboard
       },
       {
-        path: 'Profile',
-        component: () => import('@/views/alumni/Profile.vue')
-      },
-      {
         path: 'Activities',
         component: () => import('@/views/alumni/Activities.vue')
       },

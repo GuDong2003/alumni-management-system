@@ -15,7 +15,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/activities")
 @CrossOrigin(originPatterns = "*")
-@PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
 public class ActivityController {
     private static final Logger logger = LoggerFactory.getLogger(ActivityController.class);
 
