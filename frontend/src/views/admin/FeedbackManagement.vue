@@ -796,13 +796,12 @@ onMounted(() => {
 <style scoped>
 .feedback-management {
   padding: 20px;
-  height: 100%;
+  width: 100%;
 }
 
 .main-card {
-  height: calc(100% - 40px);
-  display: flex;
-  flex-direction: column;
+  margin-bottom: 20px;
+  width: 100%;
 }
 
 .card-header {
@@ -811,10 +810,9 @@ onMounted(() => {
   align-items: center;
 }
 
-.card-header .title {
+.title {
   font-size: 16px;
-  font-weight: bold;
-  color: #303133;
+  font-weight: normal;
 }
 
 .search-bar {
@@ -822,18 +820,127 @@ onMounted(() => {
 }
 
 .search-form {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
+  margin-bottom: 20px;
 }
 
 .table-container {
-  flex: 1;
-  overflow: auto;
+  width: 100%;
 }
 
 .feedback-table {
   width: 100%;
+}
+
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* 分页样式优化 */
+:deep(.el-pagination) {
+  padding: 0;
+  margin-top: 20px;
+}
+
+:deep(.el-pagination .el-select) {
+  width: 100px !important;
+}
+
+:deep(.el-pagination .el-select .el-input) {
+  width: 100px !important;
+}
+
+:deep(.el-pagination .el-select .el-input__wrapper) {
+  width: 100px !important;
+}
+
+:deep(.el-pagination .btn-prev),
+:deep(.el-pagination .btn-next),
+:deep(.el-pagination .el-pager li) {
+  background-color: #fff;
+  color: #606266;
+  min-width: 30px;
+  border-radius: 2px;
+  border: 1px solid #dcdfe6;
+}
+
+:deep(.el-pagination .el-pager li.is-active) {
+  background-color: #409eff;
+  color: #fff;
+  border-color: #409eff;
+}
+
+/* 优化表格样式 */
+:deep(.el-table) {
+  width: 100% !important;
+}
+
+:deep(.el-table__body) {
+  width: 100% !important;
+}
+
+/* 表头优化 */
+:deep(.el-table__header) {
+  width: 100% !important;
+}
+
+:deep(.el-table__header-wrapper th) {
+  word-break: keep-all;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background-color: #f5f7fa;
+  font-weight: bold;
+  text-align: center !important;
+}
+
+:deep(.el-table__header-wrapper th .cell) {
+  text-align: center !important;
+  padding: 0 5px;
+}
+
+/* 列宽自适应 */
+:deep(.el-table__cell) {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 优化表格文字溢出显示 */
+:deep(.el-table .cell) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 确保列表容器自适应 */
+:deep(.el-card__body) {
+  padding: 20px;
+}
+
+/* 优化固定列显示 */
+:deep(.el-table__fixed-right) {
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+/* 确保表格行展示美观 */
+:deep(.el-table__row) {
+  height: 48px;
+}
+
+/* 文本居中样式 */
+.centered-text {
+  text-align: center;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.4;
+  width: 100%;
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .operation-buttons {
@@ -853,12 +960,6 @@ onMounted(() => {
   color: #909399;
   cursor: not-allowed;
   text-decoration: none;
-}
-
-.pagination {
-  margin-top: 20px;
-  display: flex;
-  justify-content: flex-end;
 }
 
 .feedback-detail {
@@ -902,49 +1003,6 @@ onMounted(() => {
   color: #666;
   font-size: 14px;
   margin-bottom: 10px;
-}
-
-/* 表头样式 */
-:deep(.el-table__header-wrapper th) {
-  word-break: keep-all;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  background-color: #f5f7fa;
-  font-weight: bold;
-  text-align: center !important;
-}
-
-:deep(.el-table__header-wrapper th .cell) {
-  text-align: center !important;
-  padding: 0 5px;
-}
-
-/* 列宽自适应 */
-:deep(.el-table__cell) {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* 优化表格文字溢出显示 */
-:deep(.el-table .cell) {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* 确保列表容器自适应 */
-:deep(.el-card__body) {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  height: calc(100% - 60px);
-}
-
-/* 优化固定列显示 */
-:deep(.el-table__fixed-right) {
-  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
 }
 
 .dialog-footer {

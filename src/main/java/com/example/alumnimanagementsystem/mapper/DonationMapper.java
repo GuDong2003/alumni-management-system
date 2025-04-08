@@ -50,6 +50,9 @@ public interface DonationMapper {
     // 获取总记录数
     long count();
     
+    // 根据状态获取记录数
+    long countByStatus(String status);
+    
     // 计算捐赠总额
     BigDecimal calculateTotalAmount();
     

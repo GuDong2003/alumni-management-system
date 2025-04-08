@@ -26,16 +26,43 @@ public interface FeedbackMapper {
     @Select("SELECT * FROM feedback WHERE id = #{id}")
     Feedback findById(Long id);
     
-    @Select("SELECT * FROM feedback ORDER BY created_at DESC")
+    @Select("SELECT * FROM feedback ORDER BY " +
+            "CASE status " +
+            "  WHEN 'PENDING' THEN 1 " +
+            "  WHEN 'PROCESSING' THEN 2 " +
+            "  WHEN 'REPLIED' THEN 3 " +
+            "  WHEN 'RESOLVED' THEN 4 " +
+            "  WHEN 'CLOSED' THEN 5 " +
+            "  ELSE 6 " +
+            "END, " +
+            "created_at DESC")
     List<Feedback> findAll();
     
-    @Select("SELECT * FROM feedback WHERE user_id = #{userId} ORDER BY created_at DESC")
+    @Select("SELECT * FROM feedback WHERE user_id = #{userId} ORDER BY " +
+            "CASE status " +
+            "  WHEN 'PENDING' THEN 1 " +
+            "  WHEN 'PROCESSING' THEN 2 " +
+            "  WHEN 'REPLIED' THEN 3 " +
+            "  WHEN 'RESOLVED' THEN 4 " +
+            "  WHEN 'CLOSED' THEN 5 " +
+            "  ELSE 6 " +
+            "END, " +
+            "created_at DESC")
     List<Feedback> findByUserId(Long userId);
     
     @Select("SELECT * FROM feedback WHERE status = #{status} ORDER BY created_at DESC")
     List<Feedback> findByStatus(String status);
     
-    @Select("SELECT * FROM feedback WHERE type = #{type} ORDER BY created_at DESC")
+    @Select("SELECT * FROM feedback WHERE type = #{type} ORDER BY " +
+            "CASE status " +
+            "  WHEN 'PENDING' THEN 1 " +
+            "  WHEN 'PROCESSING' THEN 2 " +
+            "  WHEN 'REPLIED' THEN 3 " +
+            "  WHEN 'RESOLVED' THEN 4 " +
+            "  WHEN 'CLOSED' THEN 5 " +
+            "  ELSE 6 " +
+            "END, " +
+            "created_at DESC")
     List<Feedback> findByType(String type);
     
     @Select("SELECT * FROM feedback WHERE user_id = #{userId} AND status = #{status} ORDER BY created_at DESC")
@@ -44,13 +71,41 @@ public interface FeedbackMapper {
     @Select("SELECT * FROM feedback WHERE type = #{type} AND status = #{status} ORDER BY created_at DESC")
     List<Feedback> findByTypeAndStatus(String type, String status);
     
-    @Select("SELECT * FROM feedback WHERE created_at BETWEEN #{startTime} AND #{endTime} ORDER BY created_at DESC")
+    @Select("SELECT * FROM feedback WHERE created_at BETWEEN #{startTime} AND #{endTime} ORDER BY " +
+            "CASE status " +
+            "  WHEN 'PENDING' THEN 1 " +
+            "  WHEN 'PROCESSING' THEN 2 " +
+            "  WHEN 'REPLIED' THEN 3 " +
+            "  WHEN 'RESOLVED' THEN 4 " +
+            "  WHEN 'CLOSED' THEN 5 " +
+            "  ELSE 6 " +
+            "END, " +
+            "created_at DESC")
     List<Feedback> findByTimeRange(LocalDateTime startTime, LocalDateTime endTime);
     
-    @Select("SELECT * FROM feedback WHERE content LIKE CONCAT('%', #{keyword}, '%') OR title LIKE CONCAT('%', #{keyword}, '%') ORDER BY created_at DESC")
+    @Select("SELECT * FROM feedback WHERE content LIKE CONCAT('%', #{keyword}, '%') OR title LIKE CONCAT('%', #{keyword}, '%') ORDER BY " +
+            "CASE status " +
+            "  WHEN 'PENDING' THEN 1 " +
+            "  WHEN 'PROCESSING' THEN 2 " +
+            "  WHEN 'REPLIED' THEN 3 " +
+            "  WHEN 'RESOLVED' THEN 4 " +
+            "  WHEN 'CLOSED' THEN 5 " +
+            "  ELSE 6 " +
+            "END, " +
+            "created_at DESC")
     List<Feedback> searchByContent(String keyword);
     
-    @Select("SELECT * FROM feedback ORDER BY created_at DESC LIMIT #{limit} OFFSET #{offset}")
+    @Select("SELECT * FROM feedback ORDER BY " +
+            "CASE status " +
+            "  WHEN 'PENDING' THEN 1 " +
+            "  WHEN 'PROCESSING' THEN 2 " +
+            "  WHEN 'REPLIED' THEN 3 " +
+            "  WHEN 'RESOLVED' THEN 4 " +
+            "  WHEN 'CLOSED' THEN 5 " +
+            "  ELSE 6 " +
+            "END, " +
+            "created_at DESC " +
+            "LIMIT #{offset}, #{limit}")
     List<Feedback> findPage(int offset, int limit);
     
     @Select("SELECT COUNT(*) FROM feedback")

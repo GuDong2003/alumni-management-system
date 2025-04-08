@@ -17,9 +17,11 @@ request.interceptors.request.use(
       config.headers['Authorization'] = `Bearer ${token}`
       config.headers['Content-Type'] = 'application/json'
     }
+    console.log('Request config:', config)
     return config
   },
   error => {
+    console.error('Request error:', error)
     return Promise.reject(error)
   }
 )
@@ -27,10 +29,13 @@ request.interceptors.request.use(
 // 响应拦截器
 request.interceptors.response.use(
   response => {
+    console.log('Response data:', response.data)
     return response.data
   },
   error => {
+    console.error('Response error:', error)
     if (error.response) {
+      console.error('Response error details:', error.response)
       switch (error.response.status) {
         case 401:
           ElMessage.error('请先登录')

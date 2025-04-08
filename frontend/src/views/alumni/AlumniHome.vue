@@ -1,38 +1,34 @@
 <template>
-  <div class="admin-container">
+  <div class="alumni-container">
     <!-- 左侧菜单 -->
     <div class="sidebar">
       <el-menu
         :default-active="activeMenu"
-        class="admin-menu"
+        class="alumni-menu"
         background-color="#304156"
         text-color="#bfcbd9"
         active-text-color="#409EFF"
         :router="true"
       >
-        <el-menu-item index="/admin/Dashboard">
+        <el-menu-item index="/alumni/Dashboard">
           <el-icon><Monitor /></el-icon>
           <span>仪表盘</span>
         </el-menu-item>
-        <el-menu-item index="/admin/AnnouncementManagement">
-          <el-icon><Bell /></el-icon>
-          <span>公告管理</span>
-        </el-menu-item>
-        <el-menu-item index="/admin/UserManagement">
+        <el-menu-item index="/alumni/Profile">
           <el-icon><User /></el-icon>
-          <span>用户管理</span>
+          <span>个人信息</span>
         </el-menu-item>
-        <el-menu-item index="/admin/ActivityManagement">
+        <el-menu-item index="/alumni/Activities">
           <el-icon><Calendar /></el-icon>
-          <span>活动管理</span>
+          <span>活动参与</span>
         </el-menu-item>
-        <el-menu-item index="/admin/DonationManagement">
+        <el-menu-item index="/alumni/Donations">
           <el-icon><Money /></el-icon>
-          <span>捐赠管理</span>
+          <span>我的捐赠</span>
         </el-menu-item>
-        <el-menu-item index="/admin/FeedbackManagement">
+        <el-menu-item index="/alumni/Feedback">
           <el-icon><Message /></el-icon>
-          <span>反馈管理</span>
+          <span>意见反馈</span>
         </el-menu-item>
       </el-menu>
     </div>
@@ -73,122 +69,138 @@
     >
       <el-form
         ref="profileFormRef"
-        :model="userInfo"
+        :model="profileForm"
         :rules="profileRules"
-        label-width="100px"
+        label-width="120px"
         class="profile-form"
       >
-        <el-form-item label="用户名">
-          <el-input v-model="userInfo.username" disabled />
-        </el-form-item>
-        
-        <el-form-item label="姓名" prop="name">
-          <el-input v-model="userInfo.name" />
-        </el-form-item>
-        
-        <el-form-item label="性别" prop="gender">
-          <el-select v-model="userInfo.gender" placeholder="请选择性别">
-            <el-option label="男" value="MALE" />
-            <el-option label="女" value="FEMALE" />
-            <el-option label="其他" value="OTHER" />
-          </el-select>
-        </el-form-item>
-        
-        <el-form-item label="学号" prop="studentId">
-          <el-input v-model="userInfo.studentId" />
-        </el-form-item>
-        
-        <el-form-item label="专业" prop="major">
-          <el-input v-model="userInfo.major" />
-        </el-form-item>
-        
-        <el-form-item label="毕业年份" prop="graduationYear">
-          <el-input v-model="userInfo.graduationYear" />
-        </el-form-item>
-        
-        <el-form-item label="邮箱" prop="email">
-          <el-input v-model="userInfo.email" />
-        </el-form-item>
-        
-        <el-form-item label="手机号" prop="phone">
-          <el-input v-model="userInfo.phone" />
-        </el-form-item>
-        
-        <el-form-item label="当前公司" prop="currentCompany">
-          <el-input v-model="userInfo.currentCompany" />
-        </el-form-item>
-        
-        <el-form-item label="当前职位" prop="currentPosition">
-          <el-input v-model="userInfo.currentPosition" />
-        </el-form-item>
-        
-        <el-form-item label="所属行业" prop="industry">
-          <el-input v-model="userInfo.industry" />
-        </el-form-item>
-        
-        <el-form-item label="所在地" prop="location">
-          <el-input v-model="userInfo.location" />
-        </el-form-item>
-        
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="用户名" prop="username">
+              <el-input v-model="profileForm.username" disabled />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="姓名" prop="name">
+              <el-input v-model="profileForm.name" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="性别" prop="gender">
+              <el-select v-model="profileForm.gender" placeholder="请选择性别">
+                <el-option label="男" value="MALE" />
+                <el-option label="女" value="FEMALE" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="学号" prop="studentId">
+              <el-input v-model="profileForm.studentId" disabled />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="专业" prop="major">
+              <el-input v-model="profileForm.major" disabled />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="毕业年份" prop="graduationYear">
+              <el-input v-model="profileForm.graduationYear" disabled />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="邮箱" prop="email">
+              <el-input v-model="profileForm.email" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="手机号" prop="phone">
+              <el-input v-model="profileForm.phone" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="当前公司" prop="currentCompany">
+              <el-input v-model="profileForm.currentCompany" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="当前职位" prop="currentPosition">
+              <el-input v-model="profileForm.currentPosition" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="所在行业" prop="industry">
+              <el-input v-model="profileForm.industry" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="所在地" prop="location">
+              <el-input v-model="profileForm.location" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
         <el-form-item label="个人简介" prop="bio">
           <el-input
-            v-model="userInfo.bio"
+            v-model="profileForm.bio"
             type="textarea"
             :rows="4"
             placeholder="请输入个人简介"
           />
         </el-form-item>
       </el-form>
-      
       <template #footer>
-        <span class="dialog-footer">
+        <div class="dialog-footer">
           <el-button @click="profileDialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="handleUpdateProfile">保存</el-button>
-        </span>
+          <el-button type="primary" @click="handleUpdateProfile" :loading="updating">
+            保存
+          </el-button>
+        </div>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { User, ArrowDown, Monitor, Calendar, Money, ChatDotRound, Message, Bell } from '@element-plus/icons-vue'
+import { ElMessage, ElLoading } from 'element-plus'
+import { Monitor, User, Calendar, Money, Message, ArrowDown } from '@element-plus/icons-vue'
 import request from '@/utils/request'
-import { ElMessage } from 'element-plus'
 
 const router = useRouter()
 const route = useRoute()
-const username = ref('')
-const userInfo = ref({
-  id: null,
-  username: '',
-  name: '',
-  gender: '',
-  email: '',
-  phone: '',
-  role: '',
-  status: '',
-  studentId: '',
-  major: '',
-  graduationYear: '',
-  createdAt: null,
-  lastLogin: null,
-  
-  // 校友信息
-  currentCompany: '',
-  currentPosition: '',
-  industry: '',
-  location: '',
-  bio: ''
-})
+const activeMenu = ref(route.path)
 const profileDialogVisible = ref(false)
 const profileFormRef = ref(null)
+const updating = ref(false)
+const username = ref('')
+const userInfo = ref({})
 
-// 计算当前激活的菜单项
-const activeMenu = computed(() => {
-  return route.path
-})
+// 获取角色名称
+const getRoleName = (role) => {
+  const roleMap = {
+    'SUPER_ADMIN': '超级管理员',
+    'ADMIN': '管理员',
+    'ALUMNI': '校友'
+  }
+  return roleMap[role] || role
+}
 
 // 获取当前用户信息
 const fetchCurrentUser = async () => {
@@ -382,18 +394,18 @@ const handleUpdateProfile = async () => {
     const updateData = {
       id: userInfo.value.id,
       username: userInfo.value.username,
-      name: userInfo.value.name,
-      gender: userInfo.value.gender,
+      name: profileForm.name,
+      gender: profileForm.gender,
       studentId: userInfo.value.studentId,
       major: userInfo.value.major,
-      graduationYear: parseInt(userInfo.value.graduationYear, 10) || 0,
-      email: userInfo.value.email,
-      phone: userInfo.value.phone,
-      currentCompany: userInfo.value.currentCompany || '',
-      currentPosition: userInfo.value.currentPosition || '',
-      industry: userInfo.value.industry || '',
-      location: userInfo.value.location || '',
-      bio: userInfo.value.bio || '',
+      graduationYear: userInfo.value.graduationYear,
+      email: profileForm.email,
+      phone: profileForm.phone,
+      currentCompany: profileForm.currentCompany || '',
+      currentPosition: profileForm.currentPosition || '',
+      industry: profileForm.industry || '',
+      location: profileForm.location || '',
+      bio: profileForm.bio || '',
       // 添加当前用户信息
       currentUsername: currentUsername
     }
@@ -401,159 +413,87 @@ const handleUpdateProfile = async () => {
     console.log('准备发送更新请求，数据:', updateData)
     
     // 显示加载指示器
-    const loading = ElMessage({
-      message: '正在更新个人信息...',
-      duration: 0,
-      type: 'info'
+    updating.value = true
+    
+    // 发送更新请求
+    const response = await request({
+      url: `/api/users/${userInfo.value.id}`,
+      method: 'put',
+      data: updateData,
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'X-Current-Username': currentUsername
+      }
     })
     
-    try {
-      // 发送更新请求
-      const response = await request({
-        url: `/api/users/${userInfo.value.id}`,
-        method: 'put',
-        data: updateData,
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'X-Current-Username': currentUsername
-        }
-      })
-      
-      console.log('更新请求响应:', response)
-      
-      // 关闭加载指示器
-      loading.close()
-      
-      // 关闭对话框
-      profileDialogVisible.value = false
-      
-      // 立即在界面上应用更改
-      // 1. 更新本地模型数据
-      Object.assign(userInfo.value, updateData)
-      
-      // 2. 刷新页面显示
-      updateUserDisplay()
-      
-      // 3. 显示成功消息
+    console.log('更新个人信息响应:', response)
+    
+    if (response && response.success) {
       ElMessage.success('更新个人信息成功')
-      
-      // 4. 强制重新获取最新数据（后台更新）
-      setTimeout(async () => {
-        await fetchCurrentUser()
-      }, 100)
-      
-    } catch (requestError) {
-      // 关闭加载指示器
-      loading.close()
-      
-      console.error('发送更新请求失败:', requestError)
-      
-      if (requestError.response?.status === 401) {
-        ElMessage.error('认证已过期，请重新登录')
-        // 清除本地存储的令牌和用户信息
-        localStorage.removeItem('token')
-        localStorage.removeItem('username')
-        // 跳转到登录页
-        router.push('/login')
-        return
-      }
-      
-      // 无论API是否出错，都先关闭对话框并假定成功
       profileDialogVisible.value = false
-      
-      // 显示消息
-      ElMessage({
-        message: '已提交更新请求，部分数据可能需要刷新才能显示',
-        type: 'warning',
-        duration: 5000,
-        showClose: true
-      })
-      
-      // 尝试刷新用户信息（可能会失败，但仍然尝试）
-      try {
-        await fetchCurrentUser()
-        updateUserDisplay()
-      } catch (refreshError) {
-        console.error('刷新用户数据失败:', refreshError)
-      }
+      // 刷新用户信息
+      await fetchCurrentUser()
+    } else {
+      ElMessage.error(response?.message || '更新个人信息失败')
     }
-  } catch (validationError) {
-    console.error('表单验证失败:', validationError)
-    ElMessage.error('表单验证失败，请检查输入内容')
+  } catch (error) {
+    console.error('更新个人信息失败:', error)
+    if (error.response?.status === 401) {
+      ElMessage.error('认证已过期，请重新登录')
+      // 清除本地存储的令牌和用户信息
+      localStorage.removeItem('token')
+      localStorage.removeItem('username')
+      // 跳转到登录页
+      router.push('/login')
+    } else {
+      ElMessage.error('更新个人信息失败：' + (error.message || '未知错误'))
+    }
+  } finally {
+    updating.value = false
   }
 }
 
 // 表单验证规则
 const profileRules = {
   name: [
-    { required: true, message: '请输入姓名', trigger: 'blur' }
+    { required: true, message: '请输入姓名', trigger: 'blur' },
+    { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }
   ],
   gender: [
     { required: true, message: '请选择性别', trigger: 'change' }
   ],
-  studentId: [
-    { required: true, message: '请输入学号', trigger: 'blur' }
-  ],
-  major: [
-    { required: true, message: '请输入专业', trigger: 'blur' }
-  ],
-  graduationYear: [
-    { required: true, message: '请输入毕业年份', trigger: 'blur' },
-    { pattern: /^\d{4}$/, message: '毕业年份必须是4位数字', trigger: 'blur' }
-  ],
   email: [
-    { required: false, type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
+    { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
   ],
   phone: [
-    { required: false, pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' }
-  ],
-  currentCompany: [
-    { required: false, message: '请输入当前公司', trigger: 'blur' }
-  ],
-  currentPosition: [
-    { required: false, message: '请输入当前职位', trigger: 'blur' }
-  ],
-  industry: [
-    { required: false, message: '请输入所属行业', trigger: 'blur' }
-  ],
-  location: [
-    { required: false, message: '请输入所在地', trigger: 'blur' }
-  ],
-  bio: [
-    { required: false, message: '请输入个人简介', trigger: 'blur' }
+    { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号码', trigger: 'blur' }
   ]
 }
 
-// 处理菜单点击
-const handleMenuClick = (path) => {
-  router.push(`/admin/${path}`)
-}
+// 个人信息表单数据
+const profileForm = reactive({
+  username: '',
+  name: '',
+  gender: '',
+  email: '',
+  phone: '',
+  studentId: '',
+  major: '',
+  graduationYear: '',
+  currentCompany: '',
+  currentPosition: '',
+  industry: '',
+  location: '',
+  bio: ''
+})
 
-// 将角色代码转换为中文显示
-const getRoleName = (role) => {
-  if (!role) return '未知'
-  
-  const roleMap = {
-    'SUPER_ADMIN': '超级管理员',
-    'ADMIN': '管理员',
-    'ALUMNI': '校友'
+// 监听对话框显示状态，更新表单数据
+watch(profileDialogVisible, (newVal) => {
+  if (newVal) {
+    // 对话框打开时，用当前用户信息填充表单
+    Object.assign(profileForm, userInfo.value)
   }
-  
-  return roleMap[role] || role
-}
-
-// 将性别代码转换为中文显示
-const getGenderName = (gender) => {
-  if (!gender) return ''
-  
-  const genderMap = {
-    'MALE': '男',
-    'FEMALE': '女',
-    'OTHER': '其他'
-  }
-  
-  return genderMap[gender] || gender
-}
+})
 
 onMounted(() => {
   // 先从本地存储获取用户名
@@ -570,7 +510,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.admin-container {
+.alumni-container {
   display: flex;
   height: 100vh;
   width: 100%;
@@ -583,7 +523,7 @@ onMounted(() => {
   overflow-y: auto;
 }
 
-.admin-menu {
+.alumni-menu {
   border-right: none;
 }
 
@@ -639,18 +579,5 @@ onMounted(() => {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-}
-
-.no-data {
-  text-align: center;
-  padding: 40px;
-  color: #909399;
-  font-size: 14px;
-}
-
-.form-tip {
-  margin-left: 10px;
-  color: #909399;
-  font-size: 13px;
 }
 </style> 

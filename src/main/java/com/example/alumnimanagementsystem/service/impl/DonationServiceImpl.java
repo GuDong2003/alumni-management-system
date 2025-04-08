@@ -83,6 +83,11 @@ public class DonationServiceImpl implements DonationService {
     }
 
     @Override
+    public long countByStatus(String status) {
+        return donationMapper.countByStatus(status);
+    }
+
+    @Override
     public BigDecimal calculateTotalAmount() {
         return donationMapper.calculateTotalAmount();
     }

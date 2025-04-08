@@ -12,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -122,33 +123,32 @@ public class CurrentUserController {
             
             // 更新校友信息
             Alumni alumni = alumniMapper.selectByUserId(currentUser.getId());
-            if (alumni == null && (
-                profile.getCurrentCompany() != null ||
-                profile.getCurrentPosition() != null ||
-                profile.getIndustry() != null ||
-                profile.getLocation() != null ||
-                profile.getBio() != null
-            )) {
-                // 如果没有校友记录但提供了校友信息，创建新记录
-                alumni = new Alumni();
-                alumni.setUserId(currentUser.getId());
+            if (alumni != null) {
+                // 更新现有校友信息
+                alumni.setUserId(currentUser.getId());  // 设置userId
                 alumni.setCurrentCompany(profile.getCurrentCompany());
                 alumni.setCurrentPosition(profile.getCurrentPosition());
                 alumni.setIndustry(profile.getIndustry());
                 alumni.setLocation(profile.getLocation());
                 alumni.setBio(profile.getBio());
-                alumni.setCreatedAt(LocalDateTime.now());
-                alumni.setUpdatedAt(LocalDateTime.now());
-                alumniMapper.insert(alumni);
-            } else if (alumni != null) {
-                // 更新现有校友记录
-                alumni.setCurrentCompany(profile.getCurrentCompany());
-                alumni.setCurrentPosition(profile.getCurrentPosition());
-                alumni.setIndustry(profile.getIndustry());
-                alumni.setLocation(profile.getLocation());
-                alumni.setBio(profile.getBio());
-                alumni.setUpdatedAt(LocalDateTime.now());
+                alumni.setActive(true);
+                alumni.setLastActivityTime(LocalDateTime.now());
                 alumniMapper.update(alumni);
+            } else if (profile.getCurrentCompany() != null || profile.getCurrentPosition() != null) {
+                // 创建新的校友信息
+                Alumni newAlumni = new Alumni();
+                newAlumni.setUserId(currentUser.getId());  // 设置userId
+                newAlumni.setCurrentCompany(profile.getCurrentCompany());
+                newAlumni.setCurrentPosition(profile.getCurrentPosition());
+                newAlumni.setIndustry(profile.getIndustry());
+                newAlumni.setLocation(profile.getLocation());
+                newAlumni.setBio(profile.getBio());
+                newAlumni.setActive(true);
+                newAlumni.setLastActivityTime(LocalDateTime.now());
+                newAlumni.setCreatedAt(LocalDateTime.now());
+                newAlumni.setUpdatedAt(LocalDateTime.now());
+                alumniMapper.insert(newAlumni);
+                alumni = newAlumni;
             }
             
             // 获取更新后的用户信息

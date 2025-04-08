@@ -70,6 +70,11 @@ public interface DonationService {
     long count();
 
     /**
+     * 根据状态获取记录数
+     */
+    long countByStatus(String status);
+
+    /**
      * 计算捐赠总额
      */
     BigDecimal calculateTotalAmount();

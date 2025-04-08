@@ -4,6 +4,8 @@ import Register from '@/views/auth/Register.vue'
 import AdminHome from '@/views/admin/AdminHome.vue'
 import Dashboard from '@/views/admin/Dashboard.vue'
 import UserManagement from '@/views/admin/UserManagement.vue'
+import AlumniHome from '@/views/alumni/AlumniHome.vue'
+import AlumniDashboard from '@/views/alumni/Dashboard.vue'
 
 const routes = [
   {
@@ -34,6 +36,10 @@ const routes = [
         component: Dashboard
       },
       {
+        path: 'AnnouncementManagement',
+        component: () => import('@/views/admin/AnnouncementManagement.vue')
+      },
+      {
         path: 'UserManagement',
         component: UserManagement
       },
@@ -48,6 +54,37 @@ const routes = [
       {
         path: 'FeedbackManagement',
         component: () => import('@/views/admin/FeedbackManagement.vue')
+      }
+    ]
+  },
+  {
+    path: '/alumni',
+    component: AlumniHome,
+    meta: { requiresAuth: true, roles: ['ALUMNI'] },
+    children: [
+      {
+        path: '',
+        redirect: '/alumni/Dashboard'
+      },
+      {
+        path: 'Dashboard',
+        component: AlumniDashboard
+      },
+      {
+        path: 'Profile',
+        component: () => import('@/views/alumni/Profile.vue')
+      },
+      {
+        path: 'Activities',
+        component: () => import('@/views/alumni/Activities.vue')
+      },
+      {
+        path: 'Donations',
+        component: () => import('@/views/alumni/Donations.vue')
+      },
+      {
+        path: 'Feedback',
+        component: () => import('@/views/alumni/Feedback.vue')
       }
     ]
   }
@@ -84,6 +121,19 @@ router.beforeEach((to, from, next) => {
   if (to.path.startsWith('/admin')) {
     console.log('访问管理后台，检查用户角色')
     if (userRole === 'SUPER_ADMIN' || userRole === 'ADMIN') {
+      console.log('用户角色符合要求，允许访问')
+      next()
+    } else {
+      console.log('用户角色不符合要求，重定向到首页')
+      next('/')
+    }
+    return
+  }
+
+  // 如果访问校友页面，检查用户角色
+  if (to.path.startsWith('/alumni')) {
+    console.log('访问校友页面，检查用户角色')
+    if (userRole === 'ALUMNI') {
       console.log('用户角色符合要求，允许访问')
       next()
     } else {

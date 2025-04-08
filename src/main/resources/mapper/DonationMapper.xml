@@ -79,6 +79,12 @@
         FROM donation
     </select>
 
+    <select id="countByStatus" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM donation
+        WHERE status = #{status}
+    </select>
+
     <update id="updateStatus">
         UPDATE donation
         SET status = #{status}
@@ -88,5 +94,6 @@
     <select id="calculateTotalAmount" resultType="java.math.BigDecimal">
         SELECT COALESCE(SUM(amount), 0)
         FROM donation
+        WHERE status = 'APPROVED'
     </select>
 </mapper> 

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.alumnimanagementsystem.mapper.AnnouncementMapper">
+    
+    <!-- 基础列映射 -->
+    <resultMap id="BaseResultMap" type="com.example.alumnimanagementsystem.entity.Announcement">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="content" property="content"/>
+        <result column="status" property="status"/>
+        <result column="publish_time" property="publishTime"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <!-- 插入公告 -->
+    <insert id="insert" parameterType="com.example.alumnimanagementsystem.entity.Announcement" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO announcement (
+            title, content, status, publish_time, created_at, updated_at
+        ) VALUES (
+            #{title}, #{content}, #{status}, #{publishTime}, NOW(), NOW()
+        )
+    </insert>
+
+    <!-- 更新公告 -->
+    <update id="update" parameterType="com.example.alumnimanagementsystem.entity.Announcement">
+        UPDATE announcement
+        SET title = #{title},
+            content = #{content},
+            status = #{status},
+            publish_time = #{publishTime},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除公告 -->
+    <delete id="deleteById">
+        DELETE FROM announcement WHERE id = #{id}
+    </delete>
+
+    <!-- 根据ID查询公告 -->
+    <select id="findById" resultMap="BaseResultMap">
+        SELECT * FROM announcement WHERE id = #{id}
+    </select>
+
+    <!-- 查询所有公告 -->
+    <select id="findAll" resultMap="BaseResultMap">
+        SELECT * FROM announcement ORDER BY created_at DESC
+    </select>
+
+    <!-- 根据状态查询公告 -->
+    <select id="findByStatus" resultMap="BaseResultMap">
+        SELECT * FROM announcement WHERE status = #{status} ORDER BY created_at DESC
+    </select>
+</mapper> 

@@ -37,11 +37,11 @@ public class StatisticsController {
         statistics.put("totalUsers", userService.count());
         
         // 活动统计
-        statistics.put("totalActivities", activityService.count());
-        statistics.put("activeActivities", activityService.countByStatus("ACTIVE"));
+        statistics.put("totalActivities", activityService.countByStatus("ONGOING") + activityService.countByStatus("PUBLISHED"));
+        statistics.put("activeActivities", activityService.countByStatus("ONGOING"));
         
         // 捐赠统计
-        statistics.put("totalDonations", donationService.count());
+        statistics.put("totalDonations", donationService.countByStatus("APPROVED"));
         statistics.put("totalDonationAmount", donationService.calculateTotalAmount());
         
         // 反馈统计

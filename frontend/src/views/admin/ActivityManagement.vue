@@ -104,19 +104,37 @@
           </template>
         </el-table-column>
         <el-table-column prop="maxParticipants" label="人数上限" width="80" align="center" />
-        <el-table-column prop="status" label="状态" width="100" align="center">
+        <el-table-column prop="status" label="状态" width="120" align="center">
           <template #default="{ row }">
-            <el-tag :type="getStatusType(row.status)">{{ getStatusText(row.status) }}</el-tag>
+            <el-dropdown 
+              @command="(command) => handleUpdateStatus(row, command)"
+              trigger="click"
+            >
+              <el-tag
+                :type="getStatusType(row.status)"
+                style="cursor: pointer;"
+              >
+                {{ getStatusLabel(row.status) }}<el-icon class="el-icon--right"><arrow-down /></el-icon>
+              </el-tag>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item
+                    v-for="option in activityStatusOptions"
+                    :key="option.value"
+                    :command="option.value"
+                    :disabled="option.value === row.status"
+                  >
+                    {{ option.label }}
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
           </template>
         </el-table-column>
-        <el-table-column label="评论" width="100" align="center">
-          <template #default="{ row }">
-            <el-button type="primary" link @click="handleViewComments(row)">查看评论</el-button>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="120" fixed="right" align="center">
+        <el-table-column label="操作" width="180" fixed="right" align="center">
           <template #default="{ row }">
             <el-button type="primary" link @click="handleEdit(row)">编辑</el-button>
+            <el-button type="success" link @click="handleViewParticipants(row)">查看参与情况</el-button>
             <el-button type="danger" link @click="handleDelete(row)">删除</el-button>
           </template>
         </el-table-column>
@@ -220,14 +238,123 @@
       </template>
     </el-dialog>
 
-    <!-- 评论对话框 -->
+    <!-- 参与情况对话框 -->
     <el-dialog
-      v-model="commentDialogVisible"
-      title="活动评论"
-      width="60%"
+      v-model="participantsDialogVisible"
+      title="活动参与情况"
+      width="70%"
       :close-on-click-modal="false"
     >
-      <ActivityComment :activity-id="currentActivityId" />
+      <el-table
+        :data="participants"
+        style="width: 100%"
+        border
+        v-loading="participantsLoading"
+      >
+        <el-table-column prop="name" label="姓名" width="120" align="center" />
+        <el-table-column prop="email" label="邮箱" width="180" align="center" />
+        <el-table-column prop="phone" label="电话" width="150" align="center" />
+        <el-table-column prop="registerTime" label="报名时间" width="180" align="center">
+          <template #default="{ row }">
+            {{ formatDateTime(row.registerTime) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="status" label="状态" width="120" align="center">
+          <template #default="{ row }">
+            <el-dropdown 
+              @command="(command) => handleUpdateParticipantStatus(row, command)"
+              trigger="click"
+            >
+              <el-tag
+                :type="getParticipantStatusType(row.status)"
+                style="cursor: pointer;"
+              >
+                {{ getParticipantStatusLabel(row.status) }}<el-icon class="el-icon--right"><arrow-down /></el-icon>
+              </el-tag>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item
+                    v-for="option in participantStatusOptions"
+                    :key="option.value"
+                    :command="option.value"
+                    :disabled="option.value === row.status"
+                  >
+                    {{ option.label }}
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="120" align="center">
+          <template #default="{ row }">
+            <el-button
+              type="danger"
+              size="small"
+              @click="handleDeleteParticipant(row)"
+            >
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="participantsDialogVisible = false">关闭</el-button>
+        </span>
+      </template>
+    </el-dialog>
+
+    <!-- 备注对话框 -->
+    <el-dialog
+      v-model="noteDialogVisible"
+      title="添加备注"
+      width="40%"
+    >
+      <el-form :model="noteForm" label-width="80px">
+        <el-form-item label="备注内容">
+          <el-input
+            v-model="noteForm.content"
+            type="textarea"
+            :rows="4"
+            placeholder="请输入备注内容"
+          />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="noteDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="handleSubmitNote">确定</el-button>
+        </span>
+      </template>
+    </el-dialog>
+
+    <!-- 通知对话框 -->
+    <el-dialog
+      v-model="notificationDialogVisible"
+      title="发送通知"
+      width="40%"
+    >
+      <el-form :model="notificationForm" label-width="80px">
+        <el-form-item label="通知标题">
+          <el-input v-model="notificationForm.title" placeholder="请输入通知标题" />
+        </el-form-item>
+        <el-form-item label="通知内容">
+          <el-input
+            v-model="notificationForm.content"
+            type="textarea"
+            :rows="4"
+            placeholder="请输入通知内容"
+          />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="notificationDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="handleSubmitNotification">确定</el-button>
+        </span>
+      </template>
     </el-dialog>
   </div>
 </template>
@@ -237,7 +364,7 @@ import { ref, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { formatDateTime } from '@/utils/date'
 import request from '@/utils/request'
-import ActivityComment from '@/components/ActivityComment.vue'
+import { ArrowDown } from '@element-plus/icons-vue'
 
 const loading = ref(false)
 const activities = ref([])
@@ -247,8 +374,21 @@ const formRef = ref(null)
 const currentPage = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
-const commentDialogVisible = ref(false)
+const participantsDialogVisible = ref(false)
+const participants = ref([])
+const participantsLoading = ref(false)
 const currentActivityId = ref(null)
+const noteDialogVisible = ref(false)
+const notificationDialogVisible = ref(false)
+const noteForm = ref({
+  participantId: null,
+  content: ''
+})
+const notificationForm = ref({
+  participantId: null,
+  title: '',
+  content: ''
+})
 
 const form = ref({
   id: '',
@@ -264,22 +404,28 @@ const form = ref({
 
 const rules = {
   title: [
-    { required: true, message: '请输入活动标题', trigger: 'blur' }
+    { required: true, message: '请输入活动标题', trigger: 'blur' },
+    { min: 2, max: 100, message: '标题长度在2到100个字符之间', trigger: 'blur' }
   ],
   description: [
-    { required: true, message: '请输入活动描述', trigger: 'blur' }
+    { required: true, message: '请输入活动描述', trigger: 'blur' },
+    { min: 10, max: 1000, message: '描述长度在10到1000个字符之间', trigger: 'blur' }
   ],
   startTime: [
-    { required: true, message: '请选择开始时间', trigger: 'change' }
+    { required: true, message: '请选择开始时间', trigger: 'change' },
+    { type: 'date', message: '请选择有效的开始时间', trigger: 'change' }
   ],
   endTime: [
-    { required: true, message: '请选择结束时间', trigger: 'change' }
+    { required: true, message: '请选择结束时间', trigger: 'change' },
+    { type: 'date', message: '请选择有效的结束时间', trigger: 'change' }
   ],
   location: [
-    { required: true, message: '请输入活动地点', trigger: 'blur' }
+    { required: true, message: '请输入活动地点', trigger: 'blur' },
+    { min: 2, max: 200, message: '地点长度在2到200个字符之间', trigger: 'blur' }
   ],
   maxParticipants: [
-    { required: true, message: '请输入最大参与人数', trigger: 'blur' }
+    { required: true, message: '请输入最大参与人数', trigger: 'blur' },
+    { type: 'number', min: 1, max: 1000, message: '参与人数必须在1到1000之间', trigger: 'blur' }
   ],
   type: [
     { required: true, message: '请选择活动类型', trigger: 'change' }
@@ -294,42 +440,45 @@ const searchForm = ref({
   dateRange: []
 })
 
-const getStatusType = (status) => {
-  switch (status) {
-    case 'DRAFT':
-      return 'info'
-    case 'PUBLISHED':
-      return 'warning'
-    case 'ONGOING':
-      return 'success'
-    case 'COMPLETED':
-      return 'info'
-    case 'CANCELLED':
-      return 'danger'
-    default:
-      return 'info'
+// 活动状态选项
+const activityStatusOptions = [
+  { label: '草稿', value: 'DRAFT' },
+  { label: '已发布', value: 'PUBLISHED' },
+  { label: '进行中', value: 'ONGOING' },
+  { label: '已结束', value: 'COMPLETED' },
+  { label: '已取消', value: 'CANCELLED' }
+]
+
+// 参与状态选项
+const participantStatusOptions = [
+  { label: '已报名', value: 'REGISTERED' },
+  { label: '已确认', value: 'CONFIRMED' },
+  { label: '已取消', value: 'CANCELLED' },
+  { label: '已完成', value: 'COMPLETED' }
+]
+
+// 获取状态标签
+const getStatusLabel = (status) => {
+  const statusMap = {
+    'DRAFT': '草稿',
+    'PUBLISHED': '已发布',
+    'ONGOING': '进行中',
+    'COMPLETED': '已结束',
+    'CANCELLED': '已取消'
   }
+  return statusMap[status] || status
 }
 
-const getStatusText = (status) => {
-  switch (status) {
-    case 'DRAFT':
-      return '草稿'
-    case 'PUBLISHED':
-      return '已发布'
-    case 'ONGOING':
-      return '进行中'
-    case 'COMPLETED':
-      return '已结束'
-    case 'CANCELLED':
-      return '已取消'
-    case 'NOT_STARTED':
-      return '未开始'
-    case 'IN_PROGRESS':
-      return '进行中'
-    default:
-      return status
+// 获取状态类型
+const getStatusType = (status) => {
+  const typeMap = {
+    'DRAFT': 'info',
+    'PUBLISHED': 'warning',
+    'ONGOING': 'success',
+    'COMPLETED': 'info',
+    'CANCELLED': 'danger'
   }
+  return typeMap[status] || 'info'
 }
 
 const getActivityTagType = (type) => {
@@ -530,15 +679,40 @@ const handleSubmit = async () => {
   if (!formRef.value) return
   
   try {
+    // 验证表单
     await formRef.value.validate()
+    
+    // 准备提交数据
+    const submitData = {
+      title: form.value.title,
+      type: form.value.type,
+      startTime: form.value.startTime ? new Date(form.value.startTime).toISOString().replace('T', ' ').slice(0, 19) : null,
+      endTime: form.value.endTime ? new Date(form.value.endTime).toISOString().replace('T', ' ').slice(0, 19) : null,
+      location: form.value.location,
+      description: form.value.description,
+      maxParticipants: Number(form.value.maxParticipants),
+      status: 'DRAFT'
+    }
+    
+    // 验证时间
+    if (submitData.startTime && submitData.endTime) {
+      const start = new Date(submitData.startTime)
+      const end = new Date(submitData.endTime)
+      if (start >= end) {
+        ElMessage.error('结束时间必须晚于开始时间')
+        return
+      }
+    }
+    
+    console.log('提交的活动数据:', submitData)
     
     const url = dialogType.value === 'add' ? '/api/activities' : `/api/activities/${form.value.id}`
     const method = dialogType.value === 'add' ? 'post' : 'put'
     
-    await request({
+    const response = await request({
       url,
       method,
-      data: form.value
+      data: submitData
     })
     
     ElMessage.success(dialogType.value === 'add' ? '添加成功' : '更新成功')
@@ -546,7 +720,18 @@ const handleSubmit = async () => {
     fetchActivities()
   } catch (error) {
     console.error('提交失败:', error)
-    ElMessage.error(error.message || '提交失败')
+    if (error.response) {
+      // 处理后端返回的错误信息
+      const errorMessage = error.response.data?.message || '提交失败'
+      ElMessage.error(errorMessage)
+    } else if (error.message) {
+      // 处理前端验证错误
+      ElMessage.error(error.message)
+    } else {
+      // 处理其他错误
+      console.error('详细错误信息:', error)
+      ElMessage.error('提交失败，请检查表单数据')
+    }
   }
 }
 
@@ -647,9 +832,151 @@ const handleCurrentChange = (val) => {
   fetchActivities()
 }
 
-const handleViewComments = (row) => {
+const handleViewParticipants = async (row) => {
   currentActivityId.value = row.id
-  commentDialogVisible.value = true
+  participantsLoading.value = true
+  try {
+    await fetchParticipants()
+    participantsDialogVisible.value = true
+  } catch (error) {
+    console.error('获取参与情况失败:', error)
+    ElMessage.error(error.message || '获取参与情况失败')
+  } finally {
+    participantsLoading.value = false
+  }
+}
+
+// 获取参与者列表
+const fetchParticipants = async () => {
+  try {
+    const response = await request({
+      url: `/api/activities/${currentActivityId.value}/participants`,
+      method: 'get'
+    })
+    participants.value = response
+  } catch (error) {
+    console.error('获取参与者列表失败:', error)
+    ElMessage.error(error.message || '获取参与者列表失败')
+    throw error
+  }
+}
+
+const handleUpdateStatus = async (row, status) => {
+  try {
+    await request({
+      url: `/api/activities/${row.id}/status/${status}`,
+      method: 'put'
+    })
+    ElMessage.success('状态更新成功')
+    fetchActivities()
+  } catch (error) {
+    console.error('更新状态失败:', error)
+    ElMessage.error(error.message || '更新状态失败')
+  }
+}
+
+const handleAddNote = (participant) => {
+  noteForm.value.participantId = participant.id
+  noteForm.value.content = ''
+  noteDialogVisible.value = true
+}
+
+const handleSubmitNote = async () => {
+  try {
+    await request({
+      url: `/api/activities/${currentActivityId.value}/participants/${noteForm.value.participantId}/note`,
+      method: 'post',
+      data: { content: noteForm.value.content }
+    })
+    ElMessage.success('备注添加成功')
+    noteDialogVisible.value = false
+  } catch (error) {
+    console.error('添加备注失败:', error)
+    ElMessage.error(error.message || '添加备注失败')
+  }
+}
+
+const handleSendNotification = (participant) => {
+  notificationForm.value.participantId = participant.id
+  notificationForm.value.title = ''
+  notificationForm.value.content = ''
+  notificationDialogVisible.value = true
+}
+
+const handleSubmitNotification = async () => {
+  try {
+    await request({
+      url: `/api/activities/${currentActivityId.value}/participants/${notificationForm.value.participantId}/notification`,
+      method: 'post',
+      data: {
+        title: notificationForm.value.title,
+        content: notificationForm.value.content
+      }
+    })
+    ElMessage.success('通知发送成功')
+    notificationDialogVisible.value = false
+  } catch (error) {
+    console.error('发送通知失败:', error)
+    ElMessage.error(error.message || '发送通知失败')
+  }
+}
+
+// 获取参与状态标签
+const getParticipantStatusLabel = (status) => {
+  const statusMap = {
+    'REGISTERED': '已报名',
+    'CONFIRMED': '已确认',
+    'CANCELLED': '已取消',
+    'COMPLETED': '已完成'
+  }
+  return statusMap[status] || status
+}
+
+// 获取参与状态类型
+const getParticipantStatusType = (status) => {
+  const typeMap = {
+    'REGISTERED': 'warning',    // 待处理 -> 已报名（黄色）
+    'CONFIRMED': 'primary',     // 处理中 -> 已确认（蓝色）
+    'COMPLETED': 'success',     // 已解决 -> 已完成（绿色）
+    'CANCELLED': 'info'         // 已关闭 -> 已取消（灰色）
+  }
+  return typeMap[status] || 'info'
+}
+
+const handleUpdateParticipantStatus = async (participant, status) => {
+  try {
+    await request({
+      url: `/api/activities/${currentActivityId.value}/participants/${participant.id}/status/${status}`,
+      method: 'put'
+    })
+    ElMessage.success('状态更新成功')
+    // 重新获取参与者列表
+    await fetchParticipants()
+  } catch (error) {
+    console.error('更新状态失败:', error)
+    ElMessage.error(error.message || '更新状态失败')
+  }
+}
+
+const handleDeleteParticipant = async (participant) => {
+  try {
+    await ElMessageBox.confirm('确定要删除该参与者吗？', '提示', {
+      type: 'warning'
+    })
+    
+    await request({
+      url: `/api/activities/${currentActivityId.value}/participants/${participant.id}`,
+      method: 'delete'
+    })
+    
+    ElMessage.success('删除成功')
+    await fetchParticipants()
+  } catch (error) {
+    if (error !== 'cancel') {
+      console.error('删除参与者失败:', error)
+      ElMessage.error(error.message || '删除参与者失败')
+    }
+  }
 }
 
 onMounted(() => {
@@ -853,5 +1180,19 @@ onMounted(() => {
 /* 评论徽章样式 */
 :deep(.el-badge__content.el-badge__content--primary) {
   background-color: #409EFF;
+}
+
+.status-options {
+  padding: 5px;
+}
+
+.status-options .el-button {
+  justify-content: flex-start;
+  padding-left: 10px;
+}
+
+.el-icon--right {
+  margin-left: 2px;
+  font-size: 12px;
 }
 </style> 
