@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.alumnimanagementsystem.mapper.ActivityMapper">
+    <resultMap id="BaseResultMap" type="com.example.alumnimanagementsystem.entity.Activity">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="title" property="title" jdbcType="VARCHAR"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="type" property="type" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="start_time" property="startTime" jdbcType="TIMESTAMP"/>
+        <result column="end_time" property="endTime" jdbcType="TIMESTAMP"/>
+        <result column="location" property="location" jdbcType="VARCHAR"/>
+        <result column="max_participants" property="maxParticipants" jdbcType="INTEGER"/>
+        <result column="current_participants" property="currentParticipants" jdbcType="INTEGER"/>
+        <result column="created_at" property="createdAt" jdbcType="TIMESTAMP"/>
+        <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, title, description, type, status, start_time, end_time, location, max_participants, current_participants, created_at, updated_at
+    </sql>
+
+    <insert id="insert" parameterType="com.example.alumnimanagementsystem.entity.Activity" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO activity (title, description, type, status, start_time, end_time, location, max_participants, current_participants, created_at, updated_at)
+        VALUES (#{title}, #{description}, #{type}, #{status}, #{startTime}, #{endTime}, #{location}, #{maxParticipants}, #{currentParticipants}, NOW(), NOW())
+    </insert>
+
+    <update id="update" parameterType="com.example.alumnimanagementsystem.entity.Activity">
+        UPDATE activity
+        SET title = #{title},
+            description = #{description},
+            type = #{type},
+            status = #{status},
+            start_time = #{startTime},
+            end_time = #{endTime},
+            location = #{location},
+            max_participants = #{maxParticipants},
+            current_participants = #{currentParticipants},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM activity WHERE id = #{id}
+    </delete>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> FROM activity WHERE id = #{id}
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> FROM activity
+    </select>
+
+    <select id="selectByType" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> FROM activity WHERE type = #{type}
+    </select>
+
+    <select id="selectByStatus" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> FROM activity WHERE status = #{status}
+    </select>
+
+    <select id="selectByTimeRange" resultMap="BaseResultMap">
+        SELECT * FROM activity
+        WHERE start_time BETWEEN #{startTime} AND #{endTime}
+        OR end_time BETWEEN #{startTime} AND #{endTime}
+    </select>
+
+    <update id="updateStatus">
+        UPDATE activity SET status = #{status}, updated_at = NOW() WHERE id = #{id}
+    </update>
+
+    <update id="updateParticipantCount">
+        UPDATE activity SET current_participants = #{count}, updated_at = NOW() WHERE id = #{id}
+    </update>
+
+    <select id="selectByLocation" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> FROM activity WHERE location = #{location}
+    </select>
+
+    <select id="search" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> FROM activity 
+        WHERE title LIKE CONCAT('%', #{keyword}, '%') OR description LIKE CONCAT('%', #{keyword}, '%')
+    </select>
+
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM activity
+    </select>
+
+    <select id="countByStatus" resultType="long">
+        SELECT COUNT(*) FROM activity WHERE status = #{status}
+    </select>
+
+    <select id="selectByTitleContaining" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> FROM activity 
+        WHERE title LIKE CONCAT('%', #{title}, '%')
+    </select>
+
+    <select id="selectByTypeAndStatus" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> FROM activity 
+        WHERE type = #{type} AND status = #{status}
+    </select>
+
+    <select id="selectByTitle" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> FROM activity 
+        WHERE title = #{title}
+    </select>
+</mapper> 

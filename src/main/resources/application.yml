@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: alumni-management-system
+  datasource:
+    url: jdbc:mysql://localhost:3306/alumni_management_system?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: root
+    password: asdfghjkl
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      idle-timeout: 300000
+      connection-timeout: 20000
+      auto-commit: true
+  main:
+    allow-bean-definition-overriding: true
+  flyway:
+    enabled: false
+
+server:
+  port: 9090
+  servlet:
+    context-path: /
+
+logging:
+  level:
+    root: INFO
+    com.example.alumnimanagementsystem: debug
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/alumni-management-system.log
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.example.alumnimanagementsystem.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl 

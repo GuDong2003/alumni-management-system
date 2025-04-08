@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.alumnimanagementsystem.mapper.DonationMapper">
+    
+    <resultMap id="BaseResultMap" type="com.example.alumnimanagementsystem.entity.Donation">
+        <id column="id" property="id"/>
+        <result column="donor_id" property="donorId"/>
+        <result column="amount" property="amount"/>
+        <result column="donation_type" property="donationType"/>
+        <result column="donation_date" property="donationDate"/>
+        <result column="description" property="description"/>
+        <result column="status" property="status"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, donor_id, amount, donation_type, donation_date, description, status, created_at, updated_at
+    </sql>
+
+    <insert id="insert" parameterType="com.example.alumnimanagementsystem.entity.Donation" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO donation (
+            donor_id, amount, donation_type, donation_date, description, status
+        ) VALUES (
+            #{donorId}, #{amount}, #{donationType}, #{donationDate}, #{description}, #{status}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.example.alumnimanagementsystem.entity.Donation">
+        UPDATE donation
+        SET donor_id = #{donorId},
+            amount = #{amount},
+            donation_type = #{donationType},
+            donation_date = #{donationDate},
+            description = #{description},
+            status = #{status}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM donation WHERE id = #{id}
+    </delete>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM donation
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM donation
+        ORDER BY donation_date DESC
+    </select>
+
+    <select id="selectByDonorId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM donation
+        WHERE donor_id = #{donorId}
+        ORDER BY donation_date DESC
+    </select>
+
+    <select id="selectByStatus" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM donation
+        WHERE status = #{status}
+        ORDER BY donation_date DESC
+    </select>
+
+    <select id="selectPage" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM donation
+        ORDER BY donation_date DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="count" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM donation
+    </select>
+
+    <update id="updateStatus">
+        UPDATE donation
+        SET status = #{status}
+        WHERE id = #{id}
+    </update>
+
+    <select id="calculateTotalAmount" resultType="java.math.BigDecimal">
+        SELECT COALESCE(SUM(amount), 0)
+        FROM donation
+    </select>
+</mapper> 
